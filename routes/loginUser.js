@@ -4,9 +4,8 @@ import prisma from "../db/index.js";
 const loginRouter = Router();
 
 loginRouter.post("/login", async (req, res) => {
+    console.log("Requisição de login recebida:", req.body);
     const { email, password } = req.body;
-    console.log("Requisição de login recebida:", email);
-
     try {
         const user = await prisma.user.findUnique({
             where: { email }
