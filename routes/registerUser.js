@@ -8,7 +8,7 @@ registerRouter.post("/register", async (req, res) => {
     const { name, email, password } = req.body;
     try {
         const user = await prisma.user.create({
-        data: {email, password,  ...(name && { name })}
+        data: {email, password, name}
         });
         res.status(200).json({ message: "Registro bem-sucedido!" });
     } catch (err) {
