@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { json, Router } from "express";
 import prisma from "../db/index.js";
 
 const registerRouter = Router();
@@ -7,6 +7,12 @@ registerRouter.post("/register", async (req, res) => {
     console.log("Requisição de register recebida:", req.body);
     const { name, email, password } = req.body;
     try {
+        const lfPeople = await prisma.user.findUnique({where: { email } })
+        if(lfPeople) {
+           return res.status(400).json({message: "Usuário já cadastrado"});
+        }
+
+        
         const user = await prisma.user.create({
         data: {email, password, name}
         });
