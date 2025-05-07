@@ -9,7 +9,7 @@ registerRouter.post("/register", async (req, res) => {
     try {
         const lfPeople = await prisma.user.findUnique({where: { email } })
         if(lfPeople) {
-           return res.status(400).json({message: "Usuário já cadastrado"});
+            return res.status(400).json({message: "Usuário já cadastrado"});
         }
 
         
@@ -18,7 +18,7 @@ registerRouter.post("/register", async (req, res) => {
         });
         res.status(200).json({ message: "Registro bem-sucedido!" });
     } catch (err) {
-        console.error("Error in register:", err);
+
         res.status(500).json({ message: "Erro interno do servidor", error: err.message });
     }
 });
