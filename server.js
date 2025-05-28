@@ -18,7 +18,6 @@ app.use(express.json())
 
 app.use("/users", userRouter)
 app.use("/auth", loginRouter)
-app.use("/auth", registerRouter)
 app.use("/auth/register", registerRouter)
 
 app.listen(port, () => {
