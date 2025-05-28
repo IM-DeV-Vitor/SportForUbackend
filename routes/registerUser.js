@@ -23,4 +23,28 @@ registerRouter.post("/register", async (req, res) => {
     }
 });
 
+registerRouter.put("/update", async (req, res) => {
+    const { email, name, newEmail } = req.body;
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuário não encontrado" });
+        }
+
+        await prisma.user.update({
+            where: { email },
+            data: {
+                name,
+                email: newEmail || email, 
+            },
+        });
+
+        res.status(200).json({ message: "Dados atualizados com sucesso!" });
+    } catch (err) {
+        res.status(500).json({ message: "Erro ao atualizar usuário", error: err.message });
+    }
+});
+
 export default registerRouter;
