@@ -18,6 +18,29 @@ userRouter.get("/", async (req, res) => {
     }
 })
 
+userRouter.get("/by-email/:email", async (req, res) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email: req.params.email,
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuário não encontrado" });
+        }
+
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json({ message: "Erro ao buscar usuário por email" });
+    }
+});
+
 userRouter.get("/:id", async (req, res) => {
     try {
         const loggedUserById = await prisma.user.findUnique({
