@@ -7,10 +7,6 @@ const walkRouter = Router();
 walkRouter.post("/", authenticateToken, async (req, res) => {
   const { date, distance } = req.body;
   const userId = req.userId;
-  const total = await prisma.dailyDistance.aggregate({
-        _sum: { distance: true },
-        where: { userId }
-});
 
   const existing = await prisma.dailyDistance.findFirst({
     where: { userId, date }
