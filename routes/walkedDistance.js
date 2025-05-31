@@ -7,9 +7,16 @@ export default function walkRouterFactory(prisma) {
   walkRouter.post("/", authenticateToken, async (req, res) => {
     const { date, distance } = req.body;
     const userId = req.userId; 
+
+    if (!userId) {
+      console.error("walkedDistance: userId não definido após autenticação. Requisição não autorizada?");
+
+      return res.status(401).json({ error: "ID de usuário não disponível. Requisição não autorizada." });
+    }
+
     try {
       const existing = await prisma.dailyDistance.findFirst({
-        where: { userId, date }
+        where: { userId, date: new Date(date) } 
       });
 
       if (existing) {
@@ -25,8 +32,11 @@ export default function walkRouterFactory(prisma) {
         return res.json(created); 
       }
     } catch (error) {
-      console.error("Erro ao processar distância percorrida:", error);
-      res.status(500).json({ error: "Erro interno do servidor ao registrar distância." });
+      console.error("Erro ao processar distância percorrida no backend:", error);
+      res.status(500).json({ 
+        error: "Erro interno do servidor ao registrar distância.", 
+        details: error.message
+      });
     }
   });
 
