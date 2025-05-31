@@ -20,7 +20,7 @@ app.use(express.json())
 app.use("/users", userRouter)
 app.use("/auth", loginRouter)
 app.use("/auth/register", registerRouter)
-app.use("/distance/update", walkRouter) // /distance/update
+app.use("/distance/update", walkRouter)
 
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`)
