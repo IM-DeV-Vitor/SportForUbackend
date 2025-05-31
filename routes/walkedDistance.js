@@ -8,6 +8,9 @@ walkRouter.post("/", authenticateToken, async (req, res) => {
   const { date, distance } = req.body;
   const userId = req.userId;
 
+  console.log(prisma);
+  console.log(Object.keys(prisma));
+
   const existing = await prisma.dailyDistance.findFirst({
     where: { userId, date }
   });
