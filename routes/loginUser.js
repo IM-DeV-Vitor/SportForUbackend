@@ -21,7 +21,7 @@ export default function loginRouterFactory(prisma) {
         expiresIn: "1d"
       });
 
-      res.status(200).json({ token });
+      res.status(200).json({ token, userId: user.id });
     } catch (err) {
       console.error("Erro no login:", err);
       res.status(500).json({ message: "Erro interno do servidor", error: err.message });

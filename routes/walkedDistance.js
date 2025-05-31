@@ -1,17 +1,12 @@
 import { Router } from "express";
-import { authenticateToken } from "./auth.js";
 
 export default function walkRouterFactory(prisma) { 
   const walkRouter = Router();
-
-  walkRouter.post("/", authenticateToken, async (req, res) => {
-    const { date, distance } = req.body;
-    const userId = req.userId; 
-
+  walkRouter.post("/", async (req, res) => {
+    const { date, distance, userId } = req.body; 
     if (!userId) {
-      console.error("walkedDistance: userId não definido após autenticação. Requisição não autorizada?");
-
-      return res.status(401).json({ error: "ID de usuário não disponível. Requisição não autorizada." });
+      console.error("walkedDistance: userId não fornecido na requisição. Não é possível registrar distância.");
+      return res.status(400).json({ error: "ID de usuário é obrigatório para registrar distância." });
     }
 
     try {
@@ -35,7 +30,7 @@ export default function walkRouterFactory(prisma) {
       console.error("Erro ao processar distância percorrida no backend:", error);
       res.status(500).json({ 
         error: "Erro interno do servidor ao registrar distância.", 
-        details: error.message
+        details: error.message 
       });
     }
   });
