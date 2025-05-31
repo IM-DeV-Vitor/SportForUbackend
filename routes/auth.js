@@ -9,7 +9,7 @@ export function authenticateToken(req, res, next) {
   if (!token) return res.status(401).json({ error: "Token não fornecido" });
   
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, "pintoEnormeNaBocaDoIsaque");
     req.userId = payload.id;
     next();
   } catch (err) {
