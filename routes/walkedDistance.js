@@ -3,7 +3,7 @@ import { Router } from "express";
 export default function walkRouterFactory(prisma) { 
   const walkRouter = Router();
   walkRouter.post("/", async (req, res) => {
-    const { date, distance, userId } = req.body; 
+    const { date, distance, userId, name } = req.body; 
     if (!userId) {
       console.error("walkedDistance: userId não fornecido na requisição. Não é possível registrar distância.");
       return res.status(400).json({ error: "ID de usuário é obrigatório para registrar distância." });
@@ -22,7 +22,7 @@ export default function walkRouterFactory(prisma) {
         return res.json(updated); 
       } else {
         const created = await prisma.dailyDistance.create({
-          data: { date: new Date(date), distance, userId } 
+          data: { date: new Date(date), distance, userId, name } 
         });
         return res.json(created); 
       }

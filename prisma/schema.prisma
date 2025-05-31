@@ -24,8 +24,8 @@ model User {
 
 model DailyDistance {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  date      DateTime   // formato: '2025-05-30'
-  distance  Float    // em metros
+  date      DateTime  
+  distance  Float    
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @db.ObjectId
 }
