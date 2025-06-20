@@ -5,8 +5,8 @@ export default function walkRouterFactory(prisma) {
 
   function getWeekStart(date) {
     const d = new Date(date);
-    const day = d.getUTCDay(); 
-    const diff = d.getUTCDate() - day; 
+    const day = d.getUTCDay();
+    const diff = d.getUTCDate() - day;
     d.setUTCDate(diff);
     d.setUTCHours(0, 0, 0, 0);
     return d;
@@ -35,12 +35,12 @@ export default function walkRouterFactory(prisma) {
       today.setUTCHours(0, 0, 0, 0);
 
       const weekStart = getWeekStart(today);
-      const month = today.getUTCMonth() + 1; 
+      const month = today.getUTCMonth() + 1;
       const year = today.getUTCFullYear();
 
-      const result = await prisma.$transaction(async (tx) => { 
+      const result = await prisma.$transaction(async (tx) => {
         let dailyRecord;
-        const existingDaily = await tx.DailyDistance.findFirst({ 
+        const existingDaily = await tx.DailyDistance.findFirst({
           where: {
             userId,
             date: today,
@@ -48,60 +48,60 @@ export default function walkRouterFactory(prisma) {
         });
 
         if (existingDaily) {
-          dailyRecord = await tx.DailyDistance.update({ 
+          dailyRecord = await tx.DailyDistance.update({
             where: { id: existingDaily.id },
             data: { distance: existingDaily.distance + distance },
           });
         } else {
-          dailyRecord = await tx.DailyDistance.create({ 
+          dailyRecord = await tx.DailyDistance.create({
             data: { date: today, distance, userId },
           });
         }
 
         let weeklyRecord;
-        const existingWeekly = await tx.WeeklyDistance.findFirst({ 
+        const existingWeekly = await tx.WeeklyDistance.findFirst({
           where: { userId, weekStart: { equals: weekStart } },
         });
 
         if (existingWeekly) {
-          weeklyRecord = await tx.WeeklyDistance.update({ 
+          weeklyRecord = await tx.WeeklyDistance.update({
             where: { id: existingWeekly.id },
             data: { distance: existingWeekly.distance + distance },
           });
         } else {
-          weeklyRecord = await tx.WeeklyDistance.create({ 
+          weeklyRecord = await tx.WeeklyDistance.create({
             data: { weekStart, distance, userId },
           });
         }
 
         let monthlyRecord;
-        const existingMonthly = await tx.MonthlyDistance.findFirst({ 
+        const existingMonthly = await tx.MonthlyDistance.findFirst({
           where: { userId, month, year },
         });
 
         if (existingMonthly) {
-          monthlyRecord = await tx.MonthlyDistance.update({ 
+          monthlyRecord = await tx.MonthlyDistance.update({
             where: { id: existingMonthly.id },
             data: { distance: existingMonthly.distance + distance },
           });
         } else {
-          monthlyRecord = await tx.MonthlyDistance.create({ 
+          monthlyRecord = await tx.MonthlyDistance.create({
             data: { userId, month, year, distance },
           });
         }
 
         let totalRecord;
-        const existingTotal = await tx.TotalDistance.findUnique({ 
+        const existingTotal = await tx.TotalDistance.findUnique({
           where: { userId: userId },
         });
 
         if (existingTotal) {
-          totalRecord = await tx.TotalDistance.update({ 
+          totalRecord = await tx.TotalDistance.update({
             where: { userId: userId },
             data: { distance: existingTotal.distance + distance },
           });
         } else {
-          totalRecord = await tx.TotalDistance.create({ 
+          totalRecord = await tx.TotalDistance.create({
             data: { userId: userId, distance },
           });
         }
@@ -110,13 +110,12 @@ export default function walkRouterFactory(prisma) {
       });
 
       console.log("Distâncias processadas com sucesso:", result.dailyRecord);
-      return res.status(200).json(result.dailyRecord); 
+      return res.status(200).json(result.dailyRecord);
     } catch (error) {
       console.error(
         "Erro ao processar distância percorrida no backend:",
         error
       );
-
       res.status(500).json({
         error: "Erro interno do servidor ao registrar distância.",
         details: error.message,
