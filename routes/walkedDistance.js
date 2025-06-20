@@ -1,10 +1,10 @@
 import { Router } from "express";
 
 export default function walkRouterFactory(prisma) {
-    console.log("Prisma client received in walkRouterFactory:", !!prisma); // Verifica se prisma não é null/undefined
+    console.log("Prisma client received in walkRouterFactory:", !!prisma); 
   if (prisma) {
-    console.log("Prisma.$transaction available:", typeof prisma.$transaction); // Verifica se $transaction existe
-    console.log("Prisma.DailyDistance available:", !!prisma.DailyDistance); // Verifica se o modelo existe
+    console.log("Prisma.$transaction available:", typeof prisma.$transaction); 
+    console.log("Prisma.DailyDistance available:", !!prisma.DailyDistance); 
   }
   const walkRouter = Router();
 
