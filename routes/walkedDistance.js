@@ -1,6 +1,11 @@
 import { Router } from "express";
 
 export default function walkRouterFactory(prisma) {
+    console.log("Prisma client received in walkRouterFactory:", !!prisma); // Verifica se prisma não é null/undefined
+  if (prisma) {
+    console.log("Prisma.$transaction available:", typeof prisma.$transaction); // Verifica se $transaction existe
+    console.log("Prisma.DailyDistance available:", !!prisma.DailyDistance); // Verifica se o modelo existe
+  }
   const walkRouter = Router();
 
   function getWeekStart(date) {
@@ -39,6 +44,10 @@ export default function walkRouterFactory(prisma) {
       const year = today.getUTCFullYear();
 
       const result = await prisma.$transaction(async (tx) => {
+        console.log("Inside transaction callback: tx object available:", !!tx); 
+        if (tx) {
+          console.log("tx.DailyDistance available:", !!tx.DailyDistance); 
+        }
         let dailyRecord;
         const existingDaily = await tx.DailyDistance.findFirst({
           where: {
@@ -111,7 +120,7 @@ export default function walkRouterFactory(prisma) {
 
       console.log("Distâncias processadas com sucesso:", result.dailyRecord);
       return res.status(200).json(result.dailyRecord);
-    } catch (error) {
+    }  catch (error) {
       console.error(
         "Erro ao processar distância percorrida no backend:",
         error
@@ -122,6 +131,7 @@ export default function walkRouterFactory(prisma) {
       });
     }
   });
+
 
   walkRouter.post("/get", async (req, res) => {
     const { userId, date } = req.body;
