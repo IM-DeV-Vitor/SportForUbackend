@@ -113,33 +113,33 @@ export default function walkRouterFactory(prisma) {
   });
 
   walkRouter.post("/get", async (req, res) => {
-    const { userId, date } = req.body;
+  const { userId, date } = req.body;
 
-    if (!userId || !date) {
-      return res.status(400).json({ error: "userId e date são obrigatórios." });
+  if (!userId || !date) {
+    return res.status(400).json({ error: "userId e date são obrigatórios." });
+  }
+
+  try {
+    const parsedDate = new Date(date);
+    parsedDate.setUTCHours(0, 0, 0, 0);
+
+    const existing = await prisma.DailyDistance.findFirst({
+      where: {
+        userId,
+        date: parsedDate,
+      },
+    });
+
+    if (existing) {
+      return res.json({ distance: existing.distance });
+    } else {
+      return res.json({ distance: 0 });
     }
-
-    try {
-      const parsedDate = new Date(date);
-      parsedDate.setUTCHours(0, 0, 0, 0);
-
-      const existing = await prisma.dailyDistance.findFirst({
-        where: {
-          userId,
-          date: parsedDate,
-        },
-      });
-
-      if (existing) {
-        return res.json({ distance: existing.distance });
-      } else {
-        return res.json({ distance: 0 });
-      }
-    } catch (err) {
-      console.error("Erro ao buscar distância:", err);
-      res.status(500).json({ error: "Erro interno ao buscar distância." });
-    }
-  });
+  } catch (err) {
+    console.error("Erro ao buscar distância:", err);
+    res.status(500).json({ error: "Erro interno ao buscar distância." });
+  }
+});
 
   return walkRouter;
 }
