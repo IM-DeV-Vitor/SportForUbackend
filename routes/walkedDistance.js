@@ -74,7 +74,7 @@ export default function walkRouterFactory(prisma) {
       if (existing) {
         return res.json({ distance: existing.distance });
       } else {
-        return res.json({ distance: 0 }); // Caso não exista entrada, assume-se 0.
+        return res.json({ distance: 0 }); 
       }
     } catch (err) {
       console.error("Erro ao buscar distância:", err);
