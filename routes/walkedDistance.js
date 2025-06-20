@@ -68,6 +68,7 @@ export default function walkRouterFactory(prisma) {
         }
 
         let weeklyRecord;
+        console.log("Checking tx.WeeklyDistance:", !!tx.WeeklyDistance);
         const existingWeekly = await tx.WeeklyDistance.findFirst({
           where: { userId, weekStart: { equals: weekStart } },
         });
