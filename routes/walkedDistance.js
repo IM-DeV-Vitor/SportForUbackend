@@ -43,7 +43,7 @@ export default function walkRouterFactory(prisma) {
 
       const weekStart = getWeekStart(today);
       const existingWeek = await prisma.WeeklyDistance.findFirst({
-        where: { userId, weekStart },
+        where: { userId, weekStart: { equals: weekStart } },
       });
       if (existingWeek) {
         await prisma.WeeklyDistance.update({
