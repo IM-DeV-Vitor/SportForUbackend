@@ -18,14 +18,18 @@ cron.schedule("5 0 * * *", async () => {
   const today = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
   );
-
-  const result = await prisma.dailyDistance.deleteMany({
-    where: {
-      date: {
-        lt: today,
+  try {
+    const result = await prisma.dailyDistance.deleteMany({
+      where: {
+        date: {
+          lt: today,
+        },
       },
-    },
-  });
+    });
+    console.log(`🗑️ ${result.count} registros de distância removidos.`);
+  } catch (err) {
+    console.error("Erro ao limpar distâncias diárias:", err);
+  }
 });
 
 app.use(
