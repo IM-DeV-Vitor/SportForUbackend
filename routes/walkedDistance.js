@@ -36,7 +36,7 @@ export default function walkRouterFactory(prisma) {
     }
 
     try {
-      const today = new new Date(date);
+      const today = new Date(date);
       today.setUTCHours(0, 0, 0, 0);
 
       const weekStart = getWeekStart(today);
