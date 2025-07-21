@@ -36,7 +36,7 @@ export default function walkRouterFactory(prisma) {
     }
 
     try {
-      const today = new Date(date);
+      const today = new Date(date); 
       today.setUTCHours(0, 0, 0, 0);
 
       const weekStart = getWeekStart(today);
@@ -44,10 +44,6 @@ export default function walkRouterFactory(prisma) {
       const year = today.getUTCFullYear();
 
       const result = await prisma.$transaction(async (tx) => {
-        console.log("Inside transaction callback: tx object available:", !!tx);
-        if (tx) {
-          console.log("tx.DailyDistance available:", !!tx.DailyDistance);
-        }
         let dailyRecord;
         const existingDaily = await tx.DailyDistance.findFirst({
           where: {
@@ -68,7 +64,6 @@ export default function walkRouterFactory(prisma) {
         }
 
         let weeklyRecord;
-        console.log("Checking tx.WeeklyDistance:", !!tx.WeeklyDistance);
         const existingWeekly = await tx.WeeklyDistance.findFirst({
           where: { userId, weekStart: { equals: weekStart } },
         });
@@ -133,8 +128,8 @@ export default function walkRouterFactory(prisma) {
     }
   });
 
-  walkRouter.post("/get", async (req, res) => {
-    const { userId, date } = req.body;
+  walkRouter.post("/getAllDistances", async (req, res) => {
+    const { userId, date } = req.body; 
 
     if (!userId || !date) {
       return res.status(400).json({ error: "userId e date são obrigatórios." });
@@ -144,23 +139,54 @@ export default function walkRouterFactory(prisma) {
       const parsedDate = new Date(date);
       parsedDate.setUTCHours(0, 0, 0, 0);
 
-      const existing = await prisma.DailyDistance.findFirst({
+      const weekStart = getWeekStart(parsedDate);
+      const month = parsedDate.getUTCMonth() + 1;
+      const year = parsedDate.getUTCFullYear();
+
+      const daily = await prisma.DailyDistance.findFirst({
         where: {
           userId,
           date: parsedDate,
         },
+        select: { distance: true }, 
       });
 
-      if (existing) {
-        return res.json({ distance: existing.distance });
-      } else {
-        return res.json({ distance: 0 });
-      }
+      const weekly = await prisma.WeeklyDistance.findFirst({
+        where: {
+          userId,
+          weekStart: { equals: weekStart },
+        },
+        select: { distance: true },
+      });
+
+      const monthly = await prisma.MonthlyDistance.findFirst({
+        where: {
+          userId,
+          month,
+          year,
+        },
+        select: { distance: true },
+      });
+
+      const total = await prisma.TotalDistance.findUnique({
+        where: {
+          userId: userId,
+        },
+        select: { distance: true },
+      });
+
+      return res.json({
+        dailyDistance: daily ? daily.distance : 0,
+        weeklyDistance: weekly ? weekly.distance : 0,
+        monthlyDistance: monthly ? monthly.distance : 0,
+        totalDistance: total ? total.distance : 0,
+      });
     } catch (err) {
-      console.error("Erro ao buscar distância:", err);
-      res.status(500).json({ error: "Erro interno ao buscar distância." });
+      console.error("Erro ao buscar distâncias agregadas:", err);
+      res.status(500).json({ error: "Erro interno ao buscar distâncias." });
     }
   });
+
 
   return walkRouter;
 }
