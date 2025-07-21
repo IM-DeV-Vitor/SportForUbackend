@@ -1,10 +1,10 @@
 import { Router } from "express";
 
 export default function walkRouterFactory(prisma) {
-    console.log("Prisma client received in walkRouterFactory:", !!prisma); 
+  console.log("Prisma client received in walkRouterFactory:", !!prisma);
   if (prisma) {
-    console.log("Prisma.$transaction available:", typeof prisma.$transaction); 
-    console.log("Prisma.DailyDistance available:", !!prisma.DailyDistance); 
+    console.log("Prisma.$transaction available:", typeof prisma.$transaction);
+    console.log("Prisma.DailyDistance available:", !!prisma.DailyDistance);
   }
   const walkRouter = Router();
 
@@ -36,7 +36,7 @@ export default function walkRouterFactory(prisma) {
     }
 
     try {
-      const today = new Date(date);
+      const today = new new Date(date);
       today.setUTCHours(0, 0, 0, 0);
 
       const weekStart = getWeekStart(today);
@@ -44,9 +44,9 @@ export default function walkRouterFactory(prisma) {
       const year = today.getUTCFullYear();
 
       const result = await prisma.$transaction(async (tx) => {
-        console.log("Inside transaction callback: tx object available:", !!tx); 
+        console.log("Inside transaction callback: tx object available:", !!tx);
         if (tx) {
-          console.log("tx.DailyDistance available:", !!tx.DailyDistance); 
+          console.log("tx.DailyDistance available:", !!tx.DailyDistance);
         }
         let dailyRecord;
         const existingDaily = await tx.DailyDistance.findFirst({
@@ -59,7 +59,7 @@ export default function walkRouterFactory(prisma) {
         if (existingDaily) {
           dailyRecord = await tx.DailyDistance.update({
             where: { id: existingDaily.id },
-            data: { distance: existingDaily.distance + distance },
+            data: { distance: distance }, 
           });
         } else {
           dailyRecord = await tx.DailyDistance.create({
@@ -76,7 +76,7 @@ export default function walkRouterFactory(prisma) {
         if (existingWeekly) {
           weeklyRecord = await tx.WeeklyDistance.update({
             where: { id: existingWeekly.id },
-            data: { distance: existingWeekly.distance + distance },
+            data: { distance: distance }, 
           });
         } else {
           weeklyRecord = await tx.WeeklyDistance.create({
@@ -92,7 +92,7 @@ export default function walkRouterFactory(prisma) {
         if (existingMonthly) {
           monthlyRecord = await tx.MonthlyDistance.update({
             where: { id: existingMonthly.id },
-            data: { distance: existingMonthly.distance + distance },
+            data: { distance: distance }, 
           });
         } else {
           monthlyRecord = await tx.MonthlyDistance.create({
@@ -108,7 +108,7 @@ export default function walkRouterFactory(prisma) {
         if (existingTotal) {
           totalRecord = await tx.TotalDistance.update({
             where: { userId: userId },
-            data: { distance: existingTotal.distance + distance },
+            data: { distance: distance },
           });
         } else {
           totalRecord = await tx.TotalDistance.create({
@@ -121,7 +121,7 @@ export default function walkRouterFactory(prisma) {
 
       console.log("Distâncias processadas com sucesso:", result.dailyRecord);
       return res.status(200).json(result.dailyRecord);
-    }  catch (error) {
+    } catch (error) {
       console.error(
         "Erro ao processar distância percorrida no backend:",
         error
@@ -132,7 +132,6 @@ export default function walkRouterFactory(prisma) {
       });
     }
   });
-
 
   walkRouter.post("/get", async (req, res) => {
     const { userId, date } = req.body;
