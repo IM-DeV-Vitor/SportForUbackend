@@ -147,6 +147,21 @@ export default function walkRouterFactory(prisma) {
 
       today.setUTCHours(0, 0, 0, 0);
 
+      const dayStart = new Date(parsedDate);
+        const dayEnd = new Date(parsedDate);
+        dayEnd.setUTCHours(23, 59, 59, 999);
+
+        const daily = await prisma.DailyDistance.findFirst({
+        where: {
+            userId,
+            date: {
+            gte: dayStart,
+            lte: dayEnd,
+            },
+        },
+        select: { distance: true },
+        });
+
       const weekly = await prisma.WeeklyDistance.findFirst({
         where: {
           userId,
