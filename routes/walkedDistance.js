@@ -71,7 +71,7 @@ export default function walkRouterFactory(prisma) {
         if (existingWeekly) {
           weeklyRecord = await tx.WeeklyDistance.update({
             where: { id: existingWeekly.id },
-            data: { distance: distance }, 
+            data: { distance: distance + existingWeekly.distance }, 
           });
         } else {
           weeklyRecord = await tx.WeeklyDistance.create({
@@ -87,7 +87,7 @@ export default function walkRouterFactory(prisma) {
         if (existingMonthly) {
           monthlyRecord = await tx.MonthlyDistance.update({
             where: { id: existingMonthly.id },
-            data: { distance: distance }, 
+            data: { distance: distance + existingMonthly.distance }, 
           });
         } else {
           monthlyRecord = await tx.MonthlyDistance.create({
@@ -103,7 +103,7 @@ export default function walkRouterFactory(prisma) {
         if (existingTotal) {
           totalRecord = await tx.TotalDistance.update({
             where: { userId: userId },
-            data: { distance: distance },
+            data: { distance: distance + existingTotal.distance },
           });
         } else {
           totalRecord = await tx.TotalDistance.create({
